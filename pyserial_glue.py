@@ -148,7 +148,7 @@ class SerialBase(object):
         was_open = self._isOpen
         if was_open: self.close()
         if port is not None:
-            if isinstance(port, basestring):
+            if isinstance(port, str):
                 self.portstr = port
             else:
                 self.portstr = self.makeDeviceName(port)
@@ -369,7 +369,7 @@ class SerialBase(object):
         n = len(data)
         try:
             b[:n] = data
-        except TypeError, err:
+        except TypeError as err:
             import array
             if not isinstance(b, array.array):
                 raise err
@@ -387,9 +387,9 @@ class FTDISerial(SerialBase):
 
     def open(self):
         if(self.port == None):
-            print "opening first available ftdi device..."
+            print("opening first available ftdi device...")
         else:
-            print "opening ftdi device with serial %s" % self.port
+            print("opening ftdi device with serial %s" % self.port)
 
         try:
             self._ftdi_dev = pylibftdi.Device(device_id=self.port, mode='t', interface_select=pylibftdi.INTERFACE_B)

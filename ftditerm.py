@@ -12,7 +12,7 @@
 # repr, useful for debug purposes)
 
 
-import sys, os, threading
+import sys, os, threading, atexit
 import pyserial_glue as serial
 
 EXITCHARCTER = serial.to_bytes([0x1d])   # GS/CTRL+]
@@ -144,7 +144,7 @@ elif os.name == 'posix':
     def cleanup_console():
         console.cleanup()
 
-    sys.exitfunc = cleanup_console      # terminal modes have to be restored on exit...
+    atexit.register(cleanup_console)      # terminal modes have to be restored on exit...
 
 else:
     raise NotImplementedError("Sorry no implementation for your platform (%s) available." % sys.platform)
@@ -267,7 +267,7 @@ class Miniterm(object):
                     for c in data:
                         sys.stdout.write("%s " % c.encode('hex'))
                 sys.stdout.flush()
-        except serial.SerialException, e:
+        except serial.SerialException as e:
             self.alive = False
             # would be nice if the console reader could be interruptted at this
             # point...
@@ -312,7 +312,7 @@ class Miniterm(object):
                                     self.serial.flush()
                                     sys.stderr.write('.')   # Progress indicator.
                                 sys.stderr.write('\n--- File %s sent ---\n' % filename)
-                            except IOError, e:
+                            except IOError as e:
                                 sys.stderr.write('--- ERROR opening file %s: %s ---\n' % (filename, e))
                         console.setup()
                     elif c in '\x08hH?':                    # CTRL+H, h, H, ? -> Show help
@@ -378,7 +378,7 @@ class Miniterm(object):
                                 new_serial.setRTS(self.rts_state)
                                 new_serial.setDTR(self.dtr_state)
                                 new_serial.setBreak(self.break_state)
-                            except Exception, e:
+                            except Exception as e:
                                 sys.stderr.write('--- ERROR opening new port: %s ---\n' % (e,))
                                 new_serial.close()
                             else:
@@ -394,7 +394,7 @@ class Miniterm(object):
                         backup = self.serial.baudrate
                         try:
                             self.serial.baudrate = int(sys.stdin.readline().strip())
-                        except ValueError, e:
+                        except ValueError as e:
                             sys.stderr.write('--- ERROR setting baudrate: %s ---\n' % (e,))
                             self.serial.baudrate = backup
                         else:
@@ -639,7 +639,7 @@ def main():
             convert_outgoing=convert_outgoing,
             repr_mode=options.repr_mode,
         )
-    except serial.SerialException, e:
+    except serial.SerialException as e:
         sys.stderr.write("could not open port %r: %s\n" % (port, e))
         sys.exit(1)
 

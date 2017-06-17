@@ -43,14 +43,14 @@ def main():
   new_pid = c_int()
   ftdi_dev.ftdi_fn.ftdi_get_eeprom_value(PRODUCT_ID_FIELD, byref(new_pid))
 
-  print "vid: 0x%x -> 0x%x" % (old_vid.value, new_vid.value)
-  print "pid: 0x%x -> 0x%x" % (old_pid.value, new_pid.value)
+  print("vid: 0x%x -> 0x%x" % (old_vid.value, new_vid.value))
+  print("pid: 0x%x -> 0x%x" % (old_pid.value, new_pid.value))
 
   if(new_vid.value == NEW_VID and new_pid.value == NEW_PID):
-    print "done"
+    print("done")
     exit(0)
   else:
-    print "could not verify new values!"
+    print("could not verify new values!")
     exit(-1)
 
 
